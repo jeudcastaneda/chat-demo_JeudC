@@ -1,6 +1,15 @@
 package com.cetys.chatdemo.model;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class ChatMessage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private MessageType type;
     private String content;
     private String sender;
