@@ -7,6 +7,7 @@ var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
+var membersList = document.querySelector('#membersList')
 
 var stompClient = null;
 var username = null;
@@ -17,18 +18,18 @@ var colors = [
 ];
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
+    username = document.querySelector('#username').innerText.trim();
 
     if(username) {
-        usernamePage.classList.add('d-none');
-        chatPage.classList.remove('d-none');
+        // usernamePage.classList.add('d-none');
+        // chatPage.classList.remove('d-none');
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
     }
-    event.preventDefault();
+    // event.preventDefault();
 }
 
 
@@ -42,7 +43,7 @@ async function onConnected() {
         JSON.stringify({sender: username, type: 'JOIN'})
     )
 
-    connectingElement.classList.add('d-none');
+    // connectingElement.classList.add('d-none');
 
     const respone = await fetch('/chat/messages', {
         method: 'GET'
@@ -78,6 +79,17 @@ function sendMessage(event) {
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
+    if (message.type === 'JOIN') {
+        var newMember = document.createElement('li')
+        newMember.classList.add('list-group-item')
+        newMember.id = `memberItem-${message.sender}` // 'memberItem-' + message.sender
+        newMember.innerText = message.sender
+        membersList.appendChild(newMember)
+    } else if (message.type === 'LEAVE') {
+        var oldMember = document.getElementById(`memberItem-${message.sender}`)
+        membersList.removeChild(oldMember)
+    }
+
     formatChatMessage(message)
 }
 
@@ -125,5 +137,6 @@ function getAvatarColor(messageSender) {
     return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true)
+//usernameForm.addEventListener('submit', connect, true)
+connect()
 messageForm.addEventListener('submit', sendMessage, true)
