@@ -32,7 +32,7 @@ function connect(event) {
 }
 
 
-function onConnected() {
+async function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
 
@@ -43,6 +43,15 @@ function onConnected() {
     )
 
     connectingElement.classList.add('d-none');
+
+    const respone = await fetch('/chat/messages', {
+        method: 'GET'
+    })
+    const jsonBody = await respone.json()
+    console.log('RESPONSE ->', JSON.stringify(jsonBody))
+    for(let obj of jsonBody) {
+        formatChatMessage(obj)
+    }
 }
 
 
@@ -69,7 +78,10 @@ function sendMessage(event) {
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
+    formatChatMessage(message)
+}
 
+function formatChatMessage(message) {
     var messageElement = document.createElement('li');
 
     if(message.type === 'JOIN') {
@@ -103,7 +115,6 @@ function onMessageReceived(payload) {
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
 }
-
 
 function getAvatarColor(messageSender) {
     var hash = 0;
