@@ -19,14 +19,10 @@ public class SecurityConfig {
     private UserDetailsService userDetailsService;
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public static PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
+    public SessionRegistry sessionRegistry() { return new SessionRegistryImpl(); }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/js/**").permitAll()
                         .requestMatchers("/ws/**").authenticated()
                 ).formLogin((form) -> form
-                        // .loginPage("/login")
+                        .loginPage("/login")
                         .defaultSuccessUrl("/chat")
                         .permitAll()
                 ).logout((logout) -> logout
@@ -50,7 +46,7 @@ public class SecurityConfig {
                             response.sendRedirect("/");
                         }))
                 ).sessionManagement()
-                .maximumSessions(1).sessionRegistry(sessionRegistry());
+                    .maximumSessions(1).sessionRegistry(sessionRegistry());
 
         return http.build();
     }

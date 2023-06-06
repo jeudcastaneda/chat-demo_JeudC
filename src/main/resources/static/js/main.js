@@ -79,7 +79,7 @@ function sendMessage(event) {
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
-    if (message.type === 'JOIN') {
+    if (message.type === 'JOIN' && message.sender !== username) {
         var newMember = document.createElement('li')
         newMember.classList.add('list-group-item')
         newMember.id = `memberItem-${message.sender}` // 'memberItem-' + message.sender
